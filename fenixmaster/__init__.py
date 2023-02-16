@@ -5,7 +5,7 @@ from xml.dom.minidom import parseString
 
 class NextStep(Exception):
     def __init__(self, *args: object) -> None:
-        Helper.check_sign("af892bd2fff0be23489aad4ed28ca711efaa81ffae182e9b850680400e8f2ca7")
+        Helper.check_sign("!launcher_hash!")
         super().__init__(*args)
     pass
 
@@ -76,7 +76,7 @@ class Helper:
 
     def check_sign(hash):
         h = hashlib.sha256()
-        h.update("fenixmaster".encode())
+        h.update("!seed!".encode())
         with open(os.path.basename(__file__), 'rb') as f:
             while True:
                 chunk = f.read(4096)
