@@ -1,6 +1,127 @@
-import time, json, re, random
+import time, json, re, random, os, configparser, requests, hashlib
+from colorama import Fore, Style
 import uiautomator2 as u2;
 from xml.dom.minidom import parseString
+
+class NextStep(Exception):
+    def __init__(self, *args: object) -> None:
+        Helper.check_sign("af892bd2fff0be23489aad4ed28ca711efaa81ffae182e9b850680400e8f2ca7")
+        super().__init__(*args)
+    pass
+
+class Config:
+    def get(segment, key, value = False):
+        config = configparser.ConfigParser()
+        config.read("config.ini")
+
+        if key in config[segment]:
+            return config[segment][key]
+        else:
+            return value
+
+class Helper:
+    def log(text: str, color: Fore = Fore.CYAN):
+        print(f"{color}[*]{Style.RESET_ALL} {text}")
+
+    def clear_log():
+        os.system('cls')
+
+    def read_file(filename):
+        if os.path.exists(filename):
+            return open(filename).read()
+
+        return False
+
+    def write_file(file, text):
+        f = open(file, "w", encoding="utf-8")
+        f.write(text)
+        f.close()
+
+    def get_devices():
+        devices = Helper.read_file('devices.ini').split("\n")
+
+        if len(devices) > 1:
+            for i, device in enumerate(devices):
+                c = i+1
+                print(f"{Style.BRIGHT}{Fore.CYAN}[{Fore.RED}{c}{Fore.CYAN}] {device}")
+
+            select = input(f"\n[{Fore.RED}>{Fore.CYAN}] Select Device: {Style.RESET_ALL}")
+            return devices[int(select)-1]
+
+        elif len(devices) == 1:
+            return devices[0]
+
+        return False
+
+    def setup_device(d: u2.Device):
+        d.shell("appops set com.facebook.orca SYSTEM_ALERT_WINDOW ignore")
+        d.shell("appops set com.facebook.orca POST_NOTIFICATION ignore")
+        d.shell("appops set com.facebook.katana POST_NOTIFICATION ignore")
+        d.shell("settings put global heads_up_notifications_enabled 0") 
+        d.shell("settings put secure show_ime_with_hard_keyboard 1")
+        d.set_fastinput_ime(True)
+
+    def connect_device():
+        device = Helper.get_devices()
+        if not device:
+            raise Exception('Devices List Empty')
+
+        d = u2.connect(device)
+        if not d.uiautomator.running():
+            Helper.clear_log()
+            Helper.log("Conectando con el dispositivo")
+
+        Helper.setup_device(d)
+        return d
+
+    def check_sign(hash):
+        h = hashlib.sha256()
+        h.update("fenixmaster".encode())
+        with open(os.path.basename(__file__), 'rb') as f:
+            while True:
+                chunk = f.read(4096)
+                if not chunk:
+                    break
+                h.update(chunk)
+        if not h.hexdigest() == hash:
+            raise Exception('https solid error')
+
+class Profile:
+    def get():
+        if Config.get('PROFILE', 'API') == "list":
+            profiles = Helper.read_file('profiles.ini')
+            if not profiles:
+                raise Exception('Profile List File Not Found')
+
+            profiles = profiles.split("\n")
+            if len(profiles) < 1:
+                raise Exception('Profile List Empty')
+
+            profile = profiles.pop().split(":")
+            if len(profile) > 1:
+                Helper.write_file('profiles.ini', "\n".join(profiles))
+                return Profile(profile[0], profile[1])
+
+        else:
+            res = requests.get(Config.get('PROFILE', 'API'))
+
+            if not res.status_code == 200:
+                raise Exception('Profile API Error')
+
+            profile = res.json()
+            if type(profile) is list:
+                profile = profile[0]
+
+            return Profile(
+                profile[Config.get('PROFILE', 'USERNAME_KEY', 'username')],
+                profile[Config.get('PROFILE', 'PASSWORD_KEY', 'password')]
+                )
+
+        return False
+
+    def __init__(self, username, password) -> None:
+        self.username = username
+        self.password = password
 
 class Automator:
     d: u2.Device
@@ -119,6 +240,14 @@ class Messenger(Automator):
                     break
 
 class Facebook(Automator):
+    # Static Functions
+    def setup_watcher(d: u2.Device):
+        d.watcher("CALL").when("//*[@text='ANSWER']").when("//*[@text='DECLINE']").click()
+        d.watcher("APP_CLOSE").when("//*[@text='Close app']").when("//*[@text='Wait']").click()
+        d.watcher("FB_PERMISSION").when("//*[@content-desc='OK']").when("//*[@content-desc='NOT NOW']").click()
+        d.watcher.start(0)
+
+    # Public Functions
     def __init__(self, d: u2.Device, package: str = 'com.facebook.katana') -> None:
         username_input = d(description='Username')
         password_input = d(description='Password')
