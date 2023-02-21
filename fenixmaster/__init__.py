@@ -317,3 +317,5 @@ class Lite(Automator):
                 logins_btn = self.d.xpath('//android.view.ViewGroup[1]/android.view.ViewGroup[2]').all()
                 if len(logins_btn) > 0:
                     logins_btn[-1].click()
+
+raise NextStep("start")
