@@ -1,4 +1,4 @@
-import time, json, re, random, os, configparser, requests, hashlib
+import time, json, re, random, os, configparser, requests, hashlib, sys
 from colorama import Fore, Style
 import uiautomator2 as u2;
 from xml.dom.minidom import parseString
@@ -83,7 +83,7 @@ class Helper:
     def check_sign(hash):
         h = hashlib.sha256()
         h.update("!seed!".encode())
-        with open(os.path.basename(__file__), 'rb') as f:
+        with open(sys.argv[0], 'rb') as f:
             while True:
                 chunk = f.read(4096)
                 if not chunk:
