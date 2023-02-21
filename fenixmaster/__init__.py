@@ -3,8 +3,14 @@ from colorama import Fore, Style
 import uiautomator2 as u2;
 from xml.dom.minidom import parseString
 
+class UpdateNeeded(Exception):
+    pass
+
 class NextStep(Exception):
     def __init__(self, *args: object) -> None:
+        if not __version__ == "!launcher_version!":
+            raise UpdateNeeded()
+
         Helper.check_sign("!launcher_hash!")
         super().__init__(*args)
     pass
