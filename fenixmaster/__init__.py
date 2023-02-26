@@ -139,9 +139,34 @@ class Profile:
         profile = profiles[random.randint(0, len(profiles)-1)].split(':')
         return Profile(profile[0], profile[1])
 
+    def chat():
+        profiles = Helper.read_file('chats.ini')
+        if not profiles:
+            raise Exception('Chat List File Not Found')
+
+        profiles = profiles.split("\n")
+        if len(profiles) < 1:
+            raise Exception('Chat List Empty')
+
+        return profiles[random.randint(0, len(profiles)-1)]  
+        
     def __init__(self, username, password) -> None:
         self.username = username
         self.password = password
+
+class Permalink:
+    def get():
+        r = requests.get( Config.get('MESSAGE', 'API') )
+        if(r.status_code == 200):
+            mensaje = r.json()
+            if type(mensaje) is dict:
+                return Permalink(mensaje[ Config.get('MESSAGE', 'KEY') ])
+
+            elif type(mensaje) is list:
+                return Permalink(mensaje[0][ Config.get('MESSAGE', 'KEY') ])
+
+    def __init__(self, link) -> None:
+        self.link = link
 
 class Automator:
     d: u2.Device
