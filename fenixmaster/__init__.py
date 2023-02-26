@@ -200,7 +200,7 @@ class Messenger(Automator):
         d.watcher.start(0)
 
     def __init__(self, d: u2.Device, package: str = 'com.facebook.orca') -> None:
-        username_input = d.xpth("//*[@content-desc='Phone Number or Email'] | //*[@content-desc='Phone number or email']")
+        username_input = d.xpath("//*[@content-desc='Phone Number or Email'] | //*[@content-desc='Phone number or email']")
         password_input = d(description='Password')
         login_btn = d(description='LOG IN')
         super().__init__(d, package, username_input, password_input, login_btn)
