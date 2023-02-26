@@ -62,6 +62,8 @@ class Helper:
     def setup_device(d: u2.Device):
         d.shell("appops set com.facebook.orca SYSTEM_ALERT_WINDOW ignore")
         d.shell("appops set com.facebook.orca POST_NOTIFICATION ignore")
+        d.shell("appops set com.facebook.spam SYSTEM_ALERT_WINDOW ignore")
+        d.shell("appops set com.facebook.spam POST_NOTIFICATION ignore")
         d.shell("appops set com.facebook.katana POST_NOTIFICATION ignore")
         d.shell("settings put global heads_up_notifications_enabled 0") 
         d.shell("settings put secure show_ime_with_hard_keyboard 1")
@@ -179,6 +181,12 @@ class Automator:
 class Messenger(Automator):
     chat_user: str
     message_to_send: str
+
+    def setup_watcher(d: u2.Device):
+        d.watcher("CALL").when("//*[@text='ANSWER']").when("//*[@text='DECLINE']").click()
+        d.watcher("APP_CLOSE").when("//*[@text='Close app']").when("//*[@text='Wait']").click()
+        d.watcher.start(0)
+
     def __init__(self, d: u2.Device, package: str = 'com.facebook.orca') -> None:
         username_input = d(description='Phone Number or Email')
         password_input = d(description='Password')
