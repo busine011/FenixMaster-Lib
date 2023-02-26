@@ -285,6 +285,8 @@ class Messenger(Automator):
         resolution = self.d.window_size()        
         while count < limit:
             print("WWW")
+            print(self.d.app_current()["activity"])
+            self.d.sleep(1)
             if self.d.app_current()["activity"] == "com.facebook.messaging.sharing.broadcastflow.BroadcastFlowActivity":
                 print("Ok")
                 sent_btns = self.d.xpath("//androidx.recyclerview.widget.RecyclerView/android.view.ViewGroup[*]/android.view.ViewGroup[1]/android.view.ViewGroup[1][@content-desc=\"Send\"] | //androidx.recyclerview.widget.RecyclerView/android.view.ViewGroup[*]/android.view.ViewGroup[1]/android.view.ViewGroup[1][@content-desc=\"\"]").all()
