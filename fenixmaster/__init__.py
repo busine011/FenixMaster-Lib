@@ -127,6 +127,18 @@ class Profile:
 
         return False
 
+    def mona():
+        profiles = Helper.read_file('monas.ini')
+        if not profiles:
+            raise Exception('Mona List File Not Found')
+
+        profiles = profiles.split("\n")
+        if len(profiles) < 1:
+            raise Exception('Profile List Empty')
+
+        profile = profiles[random.randint(0, len(profiles)-1)].split(':')
+        return Profile(profile[0], profile[1])
+
     def __init__(self, username, password) -> None:
         self.username = username
         self.password = password
