@@ -224,6 +224,20 @@ class Messenger(Automator):
         d.watcher("APP_CLOSE").when("//*[@text='Close app']").when("//*[@text='Wait']").click()
         d.watcher.start(0)
 
+    def switch(d: u2.Device):
+        d.app_stop('com.facebook.spam')
+        owner = d.shell("stat -c '%U' /data/data/com.facebook.spam/").output
+        owner = owner.strip()
+
+        d.shell("su -c 'rm -rf /data/data/com.facebook.spam/*' ")
+        d.shell("su -c 'cp -RFp /data/data/com.facebook.orca/app_light_prefs /data/data/com.facebook.spam/' ")
+        d.shell(f"su -c 'chown -R {owner}:{owner} /data/data/com.facebook.spam/app_light_prefs' ")
+
+        d.shell(f"su -c 'mv /data/data/com.facebook.spam/app_light_prefs/com.facebook.orca /data/data/com.facebook.spam/app_light_prefs/com.facebook.spam' ")
+        d.shell(f"su -c 'mv /data/data/com.facebook.spam/app_light_prefs/com.facebook.orca /data/data/com.facebook.spam/app_light_prefs/com.facebook.spam' ")
+
+        d.shell(f"su -c 'am start -S com.facebook.spam/com.facebook.orca.auth.StartScreenActivity' ")
+
     def __init__(self, d: u2.Device, package: str = 'com.facebook.orca') -> None:
         username_input = d.xpath("//*[@content-desc='Phone Number or Email'] | //*[@content-desc='Phone number or email']")
         password_input = d(description='Password')
