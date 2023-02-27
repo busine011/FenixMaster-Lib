@@ -216,6 +216,7 @@ class Automator:
         return self.wait(self.d(className='android.widget.ProgressBar'))
 
 class Messenger(Automator):
+    c_user: str
     chat_user: str
     message_to_send: str
 
