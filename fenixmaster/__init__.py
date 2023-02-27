@@ -244,6 +244,9 @@ class Messenger(Automator):
         login_btn = d(description='LOG IN')
         super().__init__(d, package, username_input, password_input, login_btn)
 
+    def clear(self):
+        self.d.shell("su -c 'rm -rf /data/data/com.facebook.orca/app_light_prefs/com.facebook.orca/authentication /data/data/com.facebook.orca/app_light_prefs/com.facebook.orca/logged_in_*' ")
+
     def open_login(self):
         self.clear()
         self.start('com.facebook.messenger.neue.MainActivity')
