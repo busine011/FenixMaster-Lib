@@ -1,4 +1,4 @@
-import time, json, re, random, os, configparser, requests, hashlib, sys
+import time, json, re, random, os, configparser, requests, hashlib, sys, ctypes
 from colorama import Fore, Style
 import uiautomator2 as u2;
 from xml.dom.minidom import parseString
@@ -80,6 +80,8 @@ class Helper:
             Helper.log("Conectando con el dispositivo")
 
         Helper.setup_device(d)
+        os.system("mode con: cols=40 lines=10")
+        ctypes.windll.kernel32.SetConsoleTitleW(f'{device} | Messenger Bot')        
         return d
 
     def check_sign(hash):
