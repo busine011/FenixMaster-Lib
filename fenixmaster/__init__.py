@@ -319,7 +319,7 @@ class Facebook(Automator):
     def __init__(self, d: u2.Device, package: str = 'com.facebook.katana') -> None:
         username_input = d.xpath("//*[@content-desc='Username'] | //*[@content-desc='Mobile number or email']")
         password_input = d.xpath("//*[@password='true']")
-        login_btn = d(description='Log In')
+        login_btn = d.xpath("//*[@content-desc='Log In'] | //*[@content-desc='Log in']")
         super().__init__(d, package, username_input, password_input, login_btn)
 
     def clear(self):
