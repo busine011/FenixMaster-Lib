@@ -333,6 +333,21 @@ class Facebook(Automator):
                 self.d(description="Close").click_exists()
                 self.d(text="Log Into Another Account").click_exists()
 
+    def login(self, username: str, password: str) -> None:
+        if self.username_input.exists and self.password_input.exists:
+            if self.d(description="Mobile number or email").exists:
+                self.username_input.set_text(username)
+            else:
+                while not self.username_input.get_text() == username:
+                    self.username_input.set_text(username)
+
+            if hasattr(self.password_input, "clear_text"):
+                self.password_input.clear_text()
+            self.password_input.set_text(password)
+
+            self.login_btn.click()
+            self.d.sleep(1)
+
     def is_logged(self):
         if self.wait_load():
             if not ( self.d(text='OK').exists() or self.d(text='TRY AGAIN').exists() or self.d(description='Back').exists() ):
