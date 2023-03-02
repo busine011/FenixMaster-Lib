@@ -38,8 +38,8 @@ class Helper:
 
         return False
 
-    def write_file(file, text):
-        f = open(file, "w", encoding="utf-8")
+    def write_file(file, text, mode="w"):
+        f = open(file, mode, encoding="utf-8")
         f.write(text)
         f.close()
 
