@@ -108,7 +108,7 @@ class Profile:
             if len(profiles) < 1:
                 raise Exception('Profile List Empty')
 
-            profile = profiles.pop().split(":")
+            profile = profiles.pop(0).split(":")
             if len(profile) > 1:
                 Helper.write_file('profiles.ini', "\n".join(profiles))
                 return Profile(profile[0], profile[1])
