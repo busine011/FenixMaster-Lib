@@ -98,6 +98,7 @@ class Helper:
 
 class Profile:
     def get():
+        print("Obteniendo Perfil")
         if Config.get('PROFILE', 'API') == "list":
             profiles = Helper.read_file('profiles.ini')
             if not profiles:
