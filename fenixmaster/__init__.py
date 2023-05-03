@@ -267,6 +267,18 @@ class Messenger(Automator):
         else:
             return False
 
+    def get_session(self):
+        ses = ""
+        login_file = self.d.shell("su -c 'cat /data/data/com.facebook.orca/app_light_prefs/com.facebook.orca/authentication'")
+        if 'c_user' in login_file.output:
+            authentication_json = json.loads(re.search("\[.*\]", login_file.output).group())
+            for item in authentication_json:
+                ses = f"{ses} {item['name']}={item['value']};"
+
+            return ses
+        else:
+            return False
+        
     def open_chat(self, user: str):
         self.chat_user = user
         
